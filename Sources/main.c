@@ -139,29 +139,32 @@ void  initializations(void) {
 
 //  Initialize Port AD pins 7 and 6 for use as digital inputs
 
+  DDRT = 0xFF; 
 	DDRAD = 0; 		//program port AD for input mode
   ATDDIEN = 0xC0; //program PAD7 and PAD6 pins as digital inputs
   ATDCTL2 = 0x80;
   ATDCTL3 = 0x08;
   ATDCTL4 = 0x85;
   
- // LCD initializations
+/*
+Initialize SPI for baud rate of 6 Mbs, MSB first
+  (note that R/S, R/W', and LCD clk are on different PTT pins)
+*/
+   PTM = 0;
+   DDRM = 0x30;
+   SPICR1 = 0x50;
+   SPICR2 = 0x00;
+   SPIBR = 0x01;
+
+
+// LCD initializations
    PTT_PTT6 = 1;
    PTT_PTT5 = 0;
    send_i(LCDON);
    send_i(TWOLINE);
    send_i(LCDCLR);
    lcdwait();
-/*
-Initialize SPI for baud rate of 6 Mbs, MSB first
-  (note that R/S, R/W', and LCD clk are on different PTT pins)
-*/
-    PTM = 0;
-   DDRM = 0x30;
-   SPICR1 = 0x50;
-   SPICR2 = 0x00;
-   SPIBR = 0x01;
- 
+   
 /* Initialize interrupts */
 
 // RTI/interrupt initializations
@@ -182,10 +185,11 @@ Main
 ***********************************************************************
 */
 void main(void) {
-  	DisableInterrupts
+  int waitDisp = 0;
+  DisableInterrupts
 	initializations(); 		  			 		  		
 	EnableInterrupts;
-	send_i(LCDCLR);	
+	
  for(;;) {
   
 /* < start of your main loop > */ 
@@ -195,28 +199,32 @@ void main(void) {
       while(!(ATDSTAT0 & 0x80)){}
       atd1 = 255 - ATDDR0H;  
         if(atd1 > THRESH){
+           // -------------------------- TESTING LCD -----------------------------------
+          /*
           send_i(LCDCLR);
           pmsglcd("1");
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          send_i(LCDCLR);
+          for (waitDisp = 0; waitDisp < 500; waitDisp += 1) {
+            lcdwait();
+            send_i(LCDCLR);
+          }*/
+           // -------------------------- TESTING LCD -----------------------------------
+          
           outchar('1');
           zerorticnt = 0;
-        } else if(zerorticnt > 30){
+        }else if(zerorticnt > 30){
+          
+          // -------------------------- TESTING LCD -----------------------------------
+          /*
           send_i(LCDCLR);
           pmsglcd("0");
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          lcdwait();
-          send_i(LCDCLR);
+          for (waitDisp = 0; waitDisp < 500; waitDisp += 1) {
+            lcdwait();
+            send_i(LCDCLR);
+          }*/
+          // ---------------------------------------------------------------------------          
           outchar('0');
           zerorticnt = 0;
-        } else{
+        }else{
         }
  }
       
@@ -434,3 +442,5 @@ void outchar(char x) {
     while (!(SCISR1 & 0x80));  /* wait for output buffer empty */
     SCIDRL = x;
 }
+
+
