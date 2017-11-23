@@ -23,8 +23,8 @@ Entry point: 0xC029 (_Startup)
 _startupData is allocated at 0xC031 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x900     20
-  _Copy    *toCopyDownBeg 0xC1BD
+  _Range   pZeroOut       0x900     28
+  _Copy    *toCopyDownBeg 0xC265
 } _startupData;
 
 *********************************************************************************************
@@ -33,8 +33,9 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             49     R     0xC000     0xC030   ROM_C000
 .startData                        10     R     0xC031     0xC03A   ROM_C000
-.text                            386     R     0xC03B     0xC1BC   ROM_C000
-.copy                              7     R     0xC1BD     0xC1C3   ROM_C000
+.rodata1                          45     R     0xC03B     0xC067   ROM_C000
+.text                            509     R     0xC068     0xC264   ROM_C000
+.copy                              7     R     0xC265     0xC26B   ROM_C000
 .stack                           256   R/W      0x800      0x8FF   RAM
 .data                              2   R/W      0x900      0x901   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -261,12 +262,12 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_fff0                  2     R     0xFFF0     0xFFF1   .absSeg221
 .abs_section_ffe0                  2     R     0xFFE0     0xFFE1   .absSeg222
 .abs_section_ffd6                  2     R     0xFFD6     0xFFD7   .absSeg223
-.bss                              18   R/W      0x902      0x913   RAM
+.bss                              26   R/W      0x902      0x91B   RAM
 .vectSeg224_vect                   2     R     0xFFFE     0xFFFF   .vectSeg224
 
 Summary of section sizes per section type:
-READ_ONLY (R):         1CC (dec:      460)
-READ_WRITE (R/W):      114 (dec:      276)
+READ_ONLY (R):         274 (dec:      628)
+READ_WRITE (R/W):      11C (dec:      284)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -484,10 +485,10 @@ MODULE:                 -- mc9s12c32.c.o --
      _ATDCTL23                                   82       2       2       2   .abs_section_82
      _ATDCTL45                                   84       2       2       2   .abs_section_84
      _ATDDR0                                     90       2       2       1   .abs_section_90
-     _ATDDR1                                     92       2       2       0   .abs_section_92
-     _ATDDR2                                     94       2       2       0   .abs_section_94
-     _ATDDR3                                     96       2       2       0   .abs_section_96
-     _ATDDR4                                     98       2       2       0   .abs_section_98
+     _ATDDR1                                     92       2       2       1   .abs_section_92
+     _ATDDR2                                     94       2       2       1   .abs_section_94
+     _ATDDR3                                     96       2       2       1   .abs_section_96
+     _ATDDR4                                     98       2       2       1   .abs_section_98
      _ATDDR5                                     9A       2       2       0   .abs_section_9a
      _ATDDR6                                     9C       2       2       0   .abs_section_9c
      _ATDDR7                                     9E       2       2       0   .abs_section_9e
@@ -505,27 +506,37 @@ MODULE:                 -- mc9s12c32.c.o --
      _CANTXTSR                                  17E       2       2       0   .abs_section_17e
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     initializations                           C03B      84     132       1   .text       
-     main                                      C0BF      63      99       1   .text       
-     RTI_ISR                                   C122      57      87       1   .text       
-     TIM_ISR                                   C179       4       4       1   .text       
-     SCI_ISR                                   C17D       1       1       1   .text       
-     shiftout                                  C17E      14      20       1   .text       
-     lcdwait                                   C192       A      10       2   .text       
-     send_byte                                 C19C      11      17       1   .text       
-     send_i                                    C1AD       7       7       3   .text       
-     outchar                                   C1B4       9       9       1   .text       
+     initializations                           C068      84     132       1   .text       
+     main                                      C0EC      BA     186       4   .text       
+     RTI_ISR                                   C1A6      57      87       1   .text       
+     TIM_ISR                                   C1FD       4       4       1   .text       
+     SCI_ISR                                   C201       1       1       1   .text       
+     shiftout                                  C202      14      20       1   .text       
+     lcdwait                                   C216       A      10       2   .text       
+     send_byte                                 C220      11      17       1   .text       
+     send_i                                    C231       7       7       3   .text       
+     outchar                                   C238       9       9       1   .text       
+     pmsgterm                                  C241      24      36       1   .text       
 - VARIABLES:
-     THRESH                                     900       2       2       1   .data       
-     atd1                                       902       2       2       1   .bss        
-     tenthsec                                   904       2       2       3   .bss        
-     leftpb                                     906       2       2       3   .bss        
-     rghtpb                                     908       2       2       3   .bss        
-     runstp                                     90A       2       2       2   .bss        
-     rticnt                                     90C       2       2       3   .bss        
-     prevpbleft                                 90E       2       2       2   .bss        
-     prevpbright                                910       2       2       2   .bss        
-     zerorticnt                                 912       2       2       4   .bss        
+     STRING.Sensor1..1                         C03B       9       9       1   .rodata1    
+     STRING.Sensor2..2                         C044       9       9       1   .rodata1    
+     STRING.Sensor3..3                         C04D       9       9       1   .rodata1    
+     STRING.Sensor4..4                         C056       9       9       1   .rodata1    
+     STRING.Sensor5..5                         C05F       9       9       1   .rodata1    
+     THRESH                                     900       2       2       5   .data       
+     atd1                                       902       2       2       2   .bss        
+     atd2                                       904       2       2       2   .bss        
+     atd3                                       906       2       2       2   .bss        
+     atd4                                       908       2       2       2   .bss        
+     atd5                                       90A       2       2       2   .bss        
+     tenthsec                                   90C       2       2       3   .bss        
+     leftpb                                     90E       2       2       3   .bss        
+     rghtpb                                     910       2       2       3   .bss        
+     runstp                                     912       2       2       2   .bss        
+     rticnt                                     914       2       2       3   .bss        
+     prevpbleft                                 916       2       2       2   .bss        
+     prevpbright                                918       2       2       2   .bss        
+     zerorticnt                                 91A       2       2       3   .bss        
      _Vector_7                                 FFF0       2       2       0   .abs_section_fff0
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
@@ -543,7 +554,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   mc9s12c32.c.o                              260      0      0
-  main.c.o                                    20    386      6
+  main.c.o                                    28    509     51
   Start12.c.o                                  0     49      0
   other                                      256     12      7
 
@@ -552,13 +563,17 @@ SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
   initializations main RTI_ISR TIM_ISR SCI_ISR shiftout lcdwait send_byte 
-  send_i outchar 
+  send_i outchar pmsgterm 
 SECTION: ".data"
   THRESH 
 SECTION: ".bss"
-  atd1 tenthsec leftpb rghtpb runstp rticnt prevpbleft prevpbright zerorticnt 
+  atd1 atd2 atd3 atd4 atd5 tenthsec leftpb rghtpb runstp rticnt prevpbleft 
+  prevpbright zerorticnt 
 SECTION: ".init"
   Init _Startup 
+SECTION: ".rodata1"
+  STRING.Sensor1..1 STRING.Sensor2..2 STRING.Sensor3..3 STRING.Sensor4..4 
+  STRING.Sensor5..5 
 SECTION: ".abs_section_8"
   _PORTE 
 SECTION: ".abs_section_9"
@@ -1088,10 +1103,10 @@ OBJECT LIST SORTED BY ADDRESS
      _ATDDIEN                                    8D       1       1       1   .abs_section_8d
      _PORTAD0                                    8F       1       1       4   .abs_section_8f
      _ATDDR0                                     90       2       2       1   .abs_section_90
-     _ATDDR1                                     92       2       2       0   .abs_section_92
-     _ATDDR2                                     94       2       2       0   .abs_section_94
-     _ATDDR3                                     96       2       2       0   .abs_section_96
-     _ATDDR4                                     98       2       2       0   .abs_section_98
+     _ATDDR1                                     92       2       2       1   .abs_section_92
+     _ATDDR2                                     94       2       2       1   .abs_section_94
+     _ATDDR3                                     96       2       2       1   .abs_section_96
+     _ATDDR4                                     98       2       2       1   .abs_section_98
      _ATDDR5                                     9A       2       2       0   .abs_section_9a
      _ATDDR6                                     9C       2       2       0   .abs_section_9c
      _ATDDR7                                     9E       2       2       0   .abs_section_9e
@@ -1233,28 +1248,38 @@ OBJECT LIST SORTED BY ADDRESS
      _RDRAD                                     273       1       1       0   .abs_section_273
      _PERAD                                     274       1       1       0   .abs_section_274
      _PPSAD                                     275       1       1       0   .abs_section_275
-     THRESH                                     900       2       2       1   .data       
-     atd1                                       902       2       2       1   .bss        
-     tenthsec                                   904       2       2       3   .bss        
-     leftpb                                     906       2       2       3   .bss        
-     rghtpb                                     908       2       2       3   .bss        
-     runstp                                     90A       2       2       2   .bss        
-     rticnt                                     90C       2       2       3   .bss        
-     prevpbleft                                 90E       2       2       2   .bss        
-     prevpbright                                910       2       2       2   .bss        
-     zerorticnt                                 912       2       2       4   .bss        
+     THRESH                                     900       2       2       5   .data       
+     atd1                                       902       2       2       2   .bss        
+     atd2                                       904       2       2       2   .bss        
+     atd3                                       906       2       2       2   .bss        
+     atd4                                       908       2       2       2   .bss        
+     atd5                                       90A       2       2       2   .bss        
+     tenthsec                                   90C       2       2       3   .bss        
+     leftpb                                     90E       2       2       3   .bss        
+     rghtpb                                     910       2       2       3   .bss        
+     runstp                                     912       2       2       2   .bss        
+     rticnt                                     914       2       2       3   .bss        
+     prevpbleft                                 916       2       2       2   .bss        
+     prevpbright                                918       2       2       2   .bss        
+     zerorticnt                                 91A       2       2       3   .bss        
      Init                                      C000      29      41       1   .init       
      _Startup                                  C029       8       8       0   .init       
-     initializations                           C03B      84     132       1   .text       
-     main                                      C0BF      63      99       1   .text       
-     RTI_ISR                                   C122      57      87       1   .text       
-     TIM_ISR                                   C179       4       4       1   .text       
-     SCI_ISR                                   C17D       1       1       1   .text       
-     shiftout                                  C17E      14      20       1   .text       
-     lcdwait                                   C192       A      10       2   .text       
-     send_byte                                 C19C      11      17       1   .text       
-     send_i                                    C1AD       7       7       3   .text       
-     outchar                                   C1B4       9       9       1   .text       
+     STRING.Sensor1..1                         C03B       9       9       1   .rodata1    
+     STRING.Sensor2..2                         C044       9       9       1   .rodata1    
+     STRING.Sensor3..3                         C04D       9       9       1   .rodata1    
+     STRING.Sensor4..4                         C056       9       9       1   .rodata1    
+     STRING.Sensor5..5                         C05F       9       9       1   .rodata1    
+     initializations                           C068      84     132       1   .text       
+     main                                      C0EC      BA     186       4   .text       
+     RTI_ISR                                   C1A6      57      87       1   .text       
+     TIM_ISR                                   C1FD       4       4       1   .text       
+     SCI_ISR                                   C201       1       1       1   .text       
+     shiftout                                  C202      14      20       1   .text       
+     lcdwait                                   C216       A      10       2   .text       
+     send_byte                                 C220      11      17       1   .text       
+     send_i                                    C231       7       7       3   .text       
+     outchar                                   C238       9       9       1   .text       
+     pmsgterm                                  C241      24      36       1   .text       
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
      _Vector_7                                 FFF0       2       2       0   .abs_section_fff0
@@ -1264,18 +1289,18 @@ UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
 main.c.o:
-  chgline print_c pmsglcd inchar 
+  chgline print_c pmsglcd inchar testLCD 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC1BD ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC265 ---- SIZE       4 ---
 Filling bytes inserted
  00010901
-------- ROM-ADDRESS: 0xC1C1 ---- RAM-ADDRESS: 0x901 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC269 ---- RAM-ADDRESS: 0x901 ---- SIZE       1 ---
 Name of initialized Object : THRESH:1
- C8
-------- ROM-ADDRESS: 0xC1C2 ---- SIZE       2 ---
+ B4
+------- ROM-ADDRESS: 0xC26A ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1288,9 +1313,11 @@ initializations           USES _CLKSEL _PLLCTL _SYNR _REFDV _CRGFLG _COPCTL
                                 _SCIBD _SCICR1 _SCICR2 _DDRAB _PORTAB _DDRT _DDRAD 
                                 _ATDDIEN _ATDCTL23 _ATDCTL45 _PTM _DDRM _SPICR1 _SPICR2 
                                 _SPIBR _PTT send_i lcdwait _CRGINT _RTICTL 
-main                      USES initializations tenthsec _ATDCTL45 _ATDSTAT0 
-                                _ATDDR0 atd1 THRESH zerorticnt outchar leftpb runstp 
-                                rghtpb 
+main                      USES initializations main tenthsec _ATDCTL45 
+                                _ATDSTAT0 _ATDDR0 atd1 _ATDDR1 atd2 _ATDDR2 atd3 _ATDDR3 
+                                atd4 _ATDDR4 atd5 THRESH STRING.Sensor1..1 
+                                STRING.Sensor2..2 STRING.Sensor3..3 STRING.Sensor4..4 
+                                STRING.Sensor5..5 leftpb runstp rghtpb pmsgterm zerorticnt 
 RTI_ISR                   USES _CRGFLG rticnt tenthsec prevpbleft _PORTAD0 
                                 leftpb prevpbright rghtpb zerorticnt 
 TIM_ISR                   USES _TFLG1 
@@ -1298,6 +1325,7 @@ shiftout                  USES _SPISR _SPIDR
 send_byte                 USES shiftout _PTT lcdwait 
 send_i                    USES _PTT send_byte 
 outchar                   USES _SCISR1 _SCIDRL 
+pmsgterm                  USES outchar 
 _Vector_20                USES SCI_ISR 
 _Vector_15                USES TIM_ISR 
 _Vector_7                 USES RTI_ISR 
@@ -1321,8 +1349,10 @@ DEPENDENCY TREE
  |  |  |          
  |  |  +- lcdwait              (see above)
  |  |     
- |  +- outchar             
- |       
+ |  +- pmsgterm            
+ |     | 
+ |     +- outchar             
+ |          
  +- _Startup            
     | 
     +- Init                
@@ -1347,6 +1377,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 8
-Total size of all blocks to be downloaded: 460
+Number of blocks to be downloaded: 9
+Total size of all blocks to be downloaded: 628
 

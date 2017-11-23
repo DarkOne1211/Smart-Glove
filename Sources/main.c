@@ -74,10 +74,16 @@ void send_i(char);
 void chgline(char);
 void print_c(char);
 void pmsglcd(char[]);
-
+void testLCD(char);
+void pmsgterm(char[]);
 
 /* Variable declarations */
+int atd0 = 0;
 int atd1 = 0;
+int atd2 = 0;
+int atd3 = 0;
+int atd4 = 0;
+int flex[5] = [0,0,0,0,0];
 int tenthsec = 0;  // one-tenth second flag
 int leftpb = 0;    // left pushbutton flag
 int rghtpb = 0;    // right pushbutton flag
@@ -85,7 +91,7 @@ int runstp = 0;    // run/stop flag                        
 int rticnt = 0;    // RTICNT (variable)
 int prevpbleft = 0;    // previous state of left pushbuttons (variable)
 int prevpbright = 0;	 	 // previous state of right pb  	   			 		  			 		       
-int THRESH = 200;  
+int THRESH = 180;  
 int zerorticnt = 0;
 
 /* Special ASCII characters */
@@ -100,7 +106,7 @@ int zerorticnt = 0;
 /* LCD INSTRUCTION CHARACTERS */
 #define LCDON 0x0F	// LCD initialization command
 #define LCDCLR 0x01	// LCD clear display command
-#define TWOLINE 0x38	// LCD 2-line enable command
+#define TWOLINE 0xFF	// LCD 2-line enable command
 #define CURMOV 0xFE	// LCD cursor move instruction
 #define LINE1 = 0x80	// LCD line 1 cursor position
 #define LINE2 = 0xC0	// LCD line 2 cursor position
@@ -143,7 +149,7 @@ void  initializations(void) {
 	DDRAD = 0; 		//program port AD for input mode
   ATDDIEN = 0xC0; //program PAD7 and PAD6 pins as digital inputs
   ATDCTL2 = 0x80;
-  ATDCTL3 = 0x08;
+  ATDCTL3 = 0x28;
   ATDCTL4 = 0x85;
   
 /*
@@ -174,8 +180,7 @@ Initialize SPI for baud rate of 6 Mbs, MSB first
      DDRT = 0xFF;
      PTT_PTT0 = 0;
      PTT_PTT1 = 0;
-	      
-	      
+	      	      
 }
 
 	 		  			 		  		
@@ -189,7 +194,7 @@ void main(void) {
   DisableInterrupts
 	initializations(); 		  			 		  		
 	EnableInterrupts;
-	
+  //dispMenu()	
  for(;;) {
   
 /* < start of your main loop > */ 
@@ -197,34 +202,31 @@ void main(void) {
      tenthsec = 0;
       ATDCTL5 = 0x10;
       while(!(ATDSTAT0 & 0x80)){}
-      atd1 = 255 - ATDDR0H;  
+      atd0 = 255 - ATDDR0H;
+      atd1 = 255 - ATDDR1H;
+      atd2 = 255 - ATDDR2H;
+      atd3 = 255 - ATDDR3H;
+      atd4 = 255 - ATDDR4H;
+      
+        if(atd0 > THRESH){
+          flex[0] = 1;
+          zerorticnt = 0;
+        }
         if(atd1 > THRESH){
-           // -------------------------- TESTING LCD -----------------------------------
-          /*
-          send_i(LCDCLR);
-          pmsglcd("1");
-          for (waitDisp = 0; waitDisp < 500; waitDisp += 1) {
-            lcdwait();
-            send_i(LCDCLR);
-          }*/
-           // -------------------------- TESTING LCD -----------------------------------
-          
-          outchar('1');
+          flex[1] = 1;
           zerorticnt = 0;
-        }else if(zerorticnt > 30){
-          
-          // -------------------------- TESTING LCD -----------------------------------
-          /*
-          send_i(LCDCLR);
-          pmsglcd("0");
-          for (waitDisp = 0; waitDisp < 500; waitDisp += 1) {
-            lcdwait();
-            send_i(LCDCLR);
-          }*/
-          // ---------------------------------------------------------------------------          
-          outchar('0');
+        }
+        if(atd2 > THRESH){
+          flex[2] = 1;
           zerorticnt = 0;
-        }else{
+        }
+        if(atd3 > THRESH){
+          flex[3] = 1;
+          zerorticnt = 0;
+        }
+        if(atd4 > THRESH){
+          flex[4] = 1;
+          zerorticnt = 0;
         }
  }
       
@@ -239,7 +241,8 @@ void main(void) {
     runstp = 1;
   }
   
- 
+  //checkflex();
+   
  }/* loop forever */
    
 }/* do not leave main */
@@ -296,8 +299,6 @@ interrupt 15 void TIM_ISR(void)
 
 interrupt 20 void SCI_ISR(void)
 {
- 
-
 
 }
 
@@ -443,4 +444,34 @@ void outchar(char x) {
     SCIDRL = x;
 }
 
+/*
+***********************************************************************
+ Name:         testLCD(
+ Description:  Prints a character and waits one second before clearing
+ Example:      testLCD('x');
+***********************************************************************
+*/
 
+void testLCD(char test){
+  
+  int waitDisp = 0;
+  send_i(LCDCLR);
+  print_c(test);
+  for (waitDisp = 0; waitDisp < 500; waitDisp += 1)
+    lcdwait();
+  send_i(LCDCLR);
+}
+
+/*
+***********************************************************************
+  pmsgterm: print character string str[] on terminal
+***********************************************************************
+*/
+void pmsgterm(char str[]){
+
+    int counter =0;
+  while(str[counter] != '\0'){
+    outchar(str[counter]);
+    counter++;
+  }
+}
