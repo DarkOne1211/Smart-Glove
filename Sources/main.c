@@ -76,14 +76,17 @@ void print_c(char);
 void pmsglcd(char[]);
 void testLCD(char);
 void pmsgterm(char[]);
-
+void dispmenu(void);
+void checkflex(void);
+void array_maker(void);
+void PrintCharacter(char* print , int a , int b);
 /* Variable declarations */
 int atd0 = 0;
 int atd1 = 0;
 int atd2 = 0;
 int atd3 = 0;
 int atd4 = 0;
-int flex[5] = [0,0,0,0,0];
+int flex[5] = {0,0,0,0,0};
 int tenthsec = 0;  // one-tenth second flag
 int leftpb = 0;    // left pushbutton flag
 int rghtpb = 0;    // right pushbutton flag
@@ -93,7 +96,12 @@ int prevpbleft = 0;    // previous state of left pushbuttons (variable)
 int prevpbright = 0;	 	 // previous state of right pb  	   			 		  			 		       
 int THRESH = 180;  
 int zerorticnt = 0;
-
+int menuItemCounter = 0;
+unsigned char lcd_array[4][20];
+char ADD = 0x80;
+char pointer = 0;
+// LCD MENU
+char *menu[5] = {"test0","test1","test2","test3","test4"};
 /* Special ASCII characters */
 #define CR 0x0D		// ASCII return 
 #define LF 0x0A		// ASCII new line 
@@ -106,10 +114,12 @@ int zerorticnt = 0;
 /* LCD INSTRUCTION CHARACTERS */
 #define LCDON 0x0F	// LCD initialization command
 #define LCDCLR 0x01	// LCD clear display command
-#define TWOLINE 0xFF	// LCD 2-line enable command
+#define TWOLINE 0x3C	// LCD 2-line enable command
 #define CURMOV 0xFE	// LCD cursor move instruction
-#define LINE1 = 0x80	// LCD line 1 cursor position
-#define LINE2 = 0xC0	// LCD line 2 cursor position
+#define LINE1 0x80	// LCD line 1 cursor position
+#define LINE2 0xC0	// LCD line 2 cursor position
+#define LINE3 0x94	// LCD line 3 cursor position
+#define LINE4 0xD4	// LCD line 4 cursor position
 
 	 	   		
 /*	 	   		
@@ -167,10 +177,16 @@ Initialize SPI for baud rate of 6 Mbs, MSB first
    PTT_PTT6 = 1;
    PTT_PTT5 = 0;
    send_i(LCDON);
+   send_i(0x30);
+   send_i(0x30);
+   send_i(0x30);
    send_i(TWOLINE);
+   send_i(0x10);
+   send_i(0x0C);
+   send_i(0x06);
    send_i(LCDCLR);
    lcdwait();
-   
+   array_maker();
 /* Initialize interrupts */
 
 // RTI/interrupt initializations
@@ -190,44 +206,19 @@ Main
 ***********************************************************************
 */
 void main(void) {
+
   int waitDisp = 0;
   DisableInterrupts
 	initializations(); 		  			 		  		
 	EnableInterrupts;
-  //dispMenu()	
+  dispmenu();
+  PrintCharacter("Team 15",2,6);
  for(;;) {
   
 /* < start of your main loop > */ 
  if(tenthsec){
      tenthsec = 0;
-      ATDCTL5 = 0x10;
-      while(!(ATDSTAT0 & 0x80)){}
-      atd0 = 255 - ATDDR0H;
-      atd1 = 255 - ATDDR1H;
-      atd2 = 255 - ATDDR2H;
-      atd3 = 255 - ATDDR3H;
-      atd4 = 255 - ATDDR4H;
-      
-        if(atd0 > THRESH){
-          flex[0] = 1;
-          zerorticnt = 0;
-        }
-        if(atd1 > THRESH){
-          flex[1] = 1;
-          zerorticnt = 0;
-        }
-        if(atd2 > THRESH){
-          flex[2] = 1;
-          zerorticnt = 0;
-        }
-        if(atd3 > THRESH){
-          flex[3] = 1;
-          zerorticnt = 0;
-        }
-        if(atd4 > THRESH){
-          flex[4] = 1;
-          zerorticnt = 0;
-        }
+     checkflex();
  }
       
 
@@ -241,7 +232,6 @@ void main(void) {
     runstp = 1;
   }
   
-  //checkflex();
    
  }/* loop forever */
    
@@ -381,7 +371,7 @@ void send_i(char x)
 void chgline(char x)
 {
    send_i(CURMOV);
-  send_i(x);
+   send_i(x);
 }
 
 /*
@@ -469,9 +459,147 @@ void testLCD(char test){
 */
 void pmsgterm(char str[]){
 
-    int counter =0;
+    int counter = 0;
   while(str[counter] != '\0'){
     outchar(str[counter]);
     counter++;
   }
+}
+
+/*
+***********************************************************************
+  dispmenu: displays and controls menu on the LCD
+***********************************************************************
+*/
+void dispmenu(){
+  int waitDisp = 0;
+  for(;;) {
+    send_i(LCDCLR);
+    pmsglcd(menu[menuItemCounter]);
+    pmsgterm(menu[menuItemCounter]);
+    //---- 1 Second wait----------
+    for (waitDisp = 0; waitDisp < 500; waitDisp += 1)
+      lcdwait();
+    //------1 Second Wait-----------
+    checkflex();
+    if(flex[3] == 1) {
+      return;
+    }
+    
+    if(flex[1] == 1) {
+      if(menuItemCounter == 0)
+        menuItemCounter = 4;
+      else
+        menuItemCounter--;
+    }
+      
+    if(flex[2] == 1) {
+        if(menuItemCounter == 4)
+          menuItemCounter = 0;
+        else
+          menuItemCounter++;
+    }
+  }
+}
+
+/*
+***********************************************************************
+  checkflex: does the atd conversion 
+***********************************************************************
+*/
+
+void checkflex() {
+      
+      flex[0] = 0;
+      flex[1] = 0;
+      flex[2] = 0;
+      flex[3] = 0;
+      flex[4] = 0;
+      
+      ATDCTL5 = 0x10;
+      while(!(ATDSTAT0 & 0x80)){}
+      atd0 = 255 - ATDDR0H;
+      atd1 = 255 - ATDDR1H;
+      atd2 = 255 - ATDDR2H;
+      atd3 = 255 - ATDDR3H;
+      atd4 = 255 - ATDDR4H;
+      
+        if(atd0 > THRESH){
+          flex[0] = 1;
+          zerorticnt = 0;
+        }
+        if(atd1 > THRESH){
+          flex[1] = 1;
+          zerorticnt = 0;
+        }
+        if(atd2 > THRESH){
+          flex[2] = 1;
+          zerorticnt = 0;
+        }
+        if(atd3 > THRESH){
+          flex[3] = 1;
+          zerorticnt = 0;
+        }
+        if(atd4 > THRESH){
+          flex[4] = 1;
+          zerorticnt = 0;
+        }  
+}
+/*****************************************************************************************
+ * Function: Array maker
+ *
+ * This function is used to covert the lcd display into a  4 , 20 matrix
+ * so that the user can enter only the coordinates of where he wants to insert
+ * information
+ *
+ ****************************************************************************************/
+void array_maker(void){
+	int i , j;
+	i = 0;
+	j = 0;
+	for( j = 0 ; j < 20 ; j++){
+		lcd_array [i] [j] = ADD ;
+		ADD = ADD + 1;
+	}
+	i = 1 ;
+	ADD = 0xc0;
+	for( j = 0 ; j < 20 ; j++){
+		lcd_array [i] [j] = ADD ;
+		ADD = ADD + 0x01;
+	}
+	i = 2;
+	ADD = 0x94;
+	j = 0;
+	lcd_array [i] [j] = ADD ;
+	for( j = 0 ; j < 20 ; j++){
+		lcd_array [i] [j] = ADD ;
+		ADD = ADD + 0x01;
+	}
+	i = 3;
+	ADD = 0xD4;
+	j = 0;
+	lcd_array [i] [j] = ADD ;
+	for( j = 0 ; j < 20 ; j++){
+		lcd_array [i] [j] = ADD ;
+		ADD = ADD + 0x01;
+	}
+}
+/*****************************************************************************************
+ * Function: PrintCharacter
+ *
+ *	This function is used to print a string to the lcd display and
+ *	you need to provide the x and y location
+ *
+ *
+ ****************************************************************************************/
+void PrintCharacter(char* print , int a , int b){
+	int i = 0;
+	a = a - 1;
+	b = b - 1;
+	pointer = lcd_array [a][b];
+	send_i(pointer);
+	while(print[i] != '\0'){
+		print_c(print[i]);
+		i++;
+	}
 }
