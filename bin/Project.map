@@ -23,8 +23,8 @@ Entry point: 0xC029 (_Startup)
 _startupData is allocated at 0xC031 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x900     132
-  _Copy    *toCopyDownBeg 0xC3E5
+  _Range   pZeroOut       0x900     156
+  _Copy    *toCopyDownBeg 0xC619
 } _startupData;
 
 *********************************************************************************************
@@ -34,8 +34,8 @@ Section Name                    Size  Type     From       To       Segment
 .init                             49     R     0xC000     0xC030   ROM_C000
 .startData                        10     R     0xC031     0xC03A   ROM_C000
 .rodata1                          38     R     0xC03B     0xC060   ROM_C000
-.text                            900     R     0xC061     0xC3E4   ROM_C000
-.copy                             18     R     0xC3E5     0xC3F6   ROM_C000
+.text                           1464     R     0xC061     0xC618   ROM_C000
+.copy                             18     R     0xC619     0xC62A   ROM_C000
 .stack                           256   R/W      0x800      0x8FF   RAM
 .data                             13   R/W      0x900      0x90C   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -262,13 +262,13 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_fff0                  2     R     0xFFF0     0xFFF1   .absSeg221
 .abs_section_ffe0                  2     R     0xFFE0     0xFFE1   .absSeg222
 .abs_section_ffd6                  2     R     0xFFD6     0xFFD7   .absSeg223
-.bss                              39   R/W      0x90D      0x933   RAM
-.common                           80   R/W      0x934      0x983   RAM
+.bss                              63   R/W      0x90D      0x94B   RAM
+.common                           80   R/W      0x94C      0x99B   RAM
 .vectSeg224_vect                   2     R     0xFFFE     0xFFFF   .vectSeg224
 
 Summary of section sizes per section type:
-READ_ONLY (R):         3FF (dec:     1023)
-READ_WRITE (R/W):      184 (dec:      388)
+READ_ONLY (R):         633 (dec:     1587)
+READ_WRITE (R/W):      19C (dec:      412)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -319,18 +319,18 @@ MODULE:                 -- mc9s12c32.c.o --
      _RTICTL                                     3B       1       1       1   .abs_section_3b
      _COPCTL                                     3C       1       1       1   .abs_section_3c
      _ARMCOP                                     3F       1       1       0   .abs_section_3f
-     _TIOS                                       40       1       1       0   .abs_section_40
+     _TIOS                                       40       1       1       1   .abs_section_40
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
-     _TSCR1                                      46       1       1       0   .abs_section_46
+     _TSCR1                                      46       1       1       1   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       0   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
-     _TIE                                        4C       1       1       0   .abs_section_4c
-     _TSCR2                                      4D       1       1       0   .abs_section_4d
+     _TIE                                        4C       1       1       2   .abs_section_4c
+     _TSCR2                                      4D       1       1       1   .abs_section_4d
      _TFLG1                                      4E       1       1       1   .abs_section_4e
      _TFLG2                                      4F       1       1       0   .abs_section_4f
      _PACTL                                      60       1       1       0   .abs_section_60
@@ -481,7 +481,7 @@ MODULE:                 -- mc9s12c32.c.o --
      _TC4                                        58       2       2       0   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
-     _TC7                                        5E       2       2       0   .abs_section_5e
+     _TC7                                        5E       2       2       1   .abs_section_5e
      _PACNT                                      62       2       2       0   .abs_section_62
      _ATDCTL23                                   82       2       2       2   .abs_section_82
      _ATDCTL45                                   84       2       2       2   .abs_section_84
@@ -507,23 +507,23 @@ MODULE:                 -- mc9s12c32.c.o --
      _CANTXTSR                                  17E       2       2       0   .abs_section_17e
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     initializations                           C061      A5     165       1   .text       
-     main                                      C106      4A      74       1   .text       
-     RTI_ISR                                   C150      57      87       1   .text       
-     TIM_ISR                                   C1A7       4       4       1   .text       
-     SCI_ISR                                   C1AB       1       1       1   .text       
-     shiftout                                  C1AC      14      20       1   .text       
-     lcdwait                                   C1C0       A      10       3   .text       
-     send_byte                                 C1CA      11      17       2   .text       
-     send_i                                    C1DB       7       7      11   .text       
-     print_c                                   C1E2       7       7       2   .text       
-     pmsglcd                                   C1E9      24      36       1   .text       
-     outchar                                   C20D       9       9       1   .text       
-     pmsgterm                                  C216      24      36       1   .text       
-     dispmenu                                  C23A      64     100       1   .text       
-     checkflex                                 C29E      A4     164       2   .text       
-     array_maker                               C342      69     105       1   .text       
-     PrintCharacter                            C3AB      3A      58       1   .text       
+     initializations                           C061      B7     183       1   .text       
+     main                                      C118      56      86       1   .text       
+     RTI_ISR                                   C16E      57      87       1   .text       
+     TIM_ISR                                   C1C5      47      71       1   .text       
+     SCI_ISR                                   C20C       1       1       1   .text       
+     shiftout                                  C20D      14      20       1   .text       
+     lcdwait                                   C221       A      10       3   .text       
+     send_byte                                 C22B      11      17       2   .text       
+     send_i                                    C23C       7       7      12   .text       
+     print_c                                   C243       7       7      28   .text       
+     pmsglcd                                   C24A      24      36       1   .text       
+     outchar                                   C26E       9       9       1   .text       
+     pmsgterm                                  C277      24      36       1   .text       
+     dispmenu                                  C29B      64     100       1   .text       
+     checkflex                                 C2FF     277     631       6   .text       
+     array_maker                               C576      69     105       1   .text       
+     PrintCharacter                            C5DF      3A      58       1   .text       
 - VARIABLES:
      STRING.test0.1                            C03B       6       6       1   .rodata1    
      STRING.test1.2                            C041       6       6       1   .rodata1    
@@ -539,7 +539,7 @@ MODULE:                 -- main.c.o --
      atd2                                       911       2       2       2   .bss        
      atd3                                       913       2       2       2   .bss        
      atd4                                       915       2       2       2   .bss        
-     flex                                       917       A      10      13   .bss        
+     flex                                       917       A      10      28   .bss        
      tenthsec                                   921       2       2       3   .bss        
      leftpb                                     923       2       2       3   .bss        
      rghtpb                                     925       2       2       3   .bss        
@@ -550,10 +550,14 @@ MODULE:                 -- main.c.o --
      zerorticnt                                 92F       2       2       7   .bss        
      menuItemCounter                            931       2       2       7   .bss        
      pointer                                    933       1       1       1   .bss        
+     prevFlex                                   934       A      10      10   .bss        
+     flexChange                                 93E       A      10      43   .bss        
+     timinterruptCounter                        948       2       2       3   .bss        
+     checkCondition                             94A       2       2       1   .bss        
      _Vector_7                                 FFF0       2       2       0   .abs_section_fff0
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
-     lcd_array                                  934      50      80       4   .common     
+     lcd_array                                  94C      50      80       4   .common     
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
      Init                                      C000      29      41       1   .init       
@@ -568,7 +572,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   mc9s12c32.c.o                              260      0      0
-  main.c.o                                   132    900     44
+  main.c.o                                   156   1464     44
   Start12.c.o                                  0     49      0
   other                                      256     12     18
 
@@ -583,7 +587,8 @@ SECTION: ".data"
   THRESH ADD menu 
 SECTION: ".bss"
   atd0 atd1 atd2 atd3 atd4 flex tenthsec leftpb rghtpb runstp rticnt 
-  prevpbleft prevpbright zerorticnt menuItemCounter pointer 
+  prevpbleft prevpbright zerorticnt menuItemCounter pointer prevFlex flexChange 
+  timinterruptCounter checkCondition 
 SECTION: ".init"
   Init _Startup 
 SECTION: ".rodata1"
@@ -1086,19 +1091,19 @@ OBJECT LIST SORTED BY ADDRESS
      _RTICTL                                     3B       1       1       1   .abs_section_3b
      _COPCTL                                     3C       1       1       1   .abs_section_3c
      _ARMCOP                                     3F       1       1       0   .abs_section_3f
-     _TIOS                                       40       1       1       0   .abs_section_40
+     _TIOS                                       40       1       1       1   .abs_section_40
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
      _TCNT                                       44       2       2       0   .abs_section_44
-     _TSCR1                                      46       1       1       0   .abs_section_46
+     _TSCR1                                      46       1       1       1   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       0   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       0   .abs_section_4b
-     _TIE                                        4C       1       1       0   .abs_section_4c
-     _TSCR2                                      4D       1       1       0   .abs_section_4d
+     _TIE                                        4C       1       1       2   .abs_section_4c
+     _TSCR2                                      4D       1       1       1   .abs_section_4d
      _TFLG1                                      4E       1       1       1   .abs_section_4e
      _TFLG2                                      4F       1       1       0   .abs_section_4f
      _TC0                                        50       2       2       0   .abs_section_50
@@ -1108,7 +1113,7 @@ OBJECT LIST SORTED BY ADDRESS
      _TC4                                        58       2       2       0   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
-     _TC7                                        5E       2       2       0   .abs_section_5e
+     _TC7                                        5E       2       2       1   .abs_section_5e
      _PACTL                                      60       1       1       0   .abs_section_60
      _PAFLG                                      61       1       1       0   .abs_section_61
      _PACNT                                      62       2       2       0   .abs_section_62
@@ -1273,7 +1278,7 @@ OBJECT LIST SORTED BY ADDRESS
      atd2                                       911       2       2       2   .bss        
      atd3                                       913       2       2       2   .bss        
      atd4                                       915       2       2       2   .bss        
-     flex                                       917       A      10      13   .bss        
+     flex                                       917       A      10      28   .bss        
      tenthsec                                   921       2       2       3   .bss        
      leftpb                                     923       2       2       3   .bss        
      rghtpb                                     925       2       2       3   .bss        
@@ -1284,7 +1289,11 @@ OBJECT LIST SORTED BY ADDRESS
      zerorticnt                                 92F       2       2       7   .bss        
      menuItemCounter                            931       2       2       7   .bss        
      pointer                                    933       1       1       1   .bss        
-     lcd_array                                  934      50      80       4   .common     
+     prevFlex                                   934       A      10      10   .bss        
+     flexChange                                 93E       A      10      43   .bss        
+     timinterruptCounter                        948       2       2       3   .bss        
+     checkCondition                             94A       2       2       1   .bss        
+     lcd_array                                  94C      50      80       4   .common     
      Init                                      C000      29      41       1   .init       
      _Startup                                  C029       8       8       0   .init       
      STRING.test0.1                            C03B       6       6       1   .rodata1    
@@ -1293,23 +1302,23 @@ OBJECT LIST SORTED BY ADDRESS
      STRING.test3.4                            C04D       6       6       1   .rodata1    
      STRING.test4.5                            C053       6       6       1   .rodata1    
      STRING.Team.15.6                          C059       8       8       1   .rodata1    
-     initializations                           C061      A5     165       1   .text       
-     main                                      C106      4A      74       1   .text       
-     RTI_ISR                                   C150      57      87       1   .text       
-     TIM_ISR                                   C1A7       4       4       1   .text       
-     SCI_ISR                                   C1AB       1       1       1   .text       
-     shiftout                                  C1AC      14      20       1   .text       
-     lcdwait                                   C1C0       A      10       3   .text       
-     send_byte                                 C1CA      11      17       2   .text       
-     send_i                                    C1DB       7       7      11   .text       
-     print_c                                   C1E2       7       7       2   .text       
-     pmsglcd                                   C1E9      24      36       1   .text       
-     outchar                                   C20D       9       9       1   .text       
-     pmsgterm                                  C216      24      36       1   .text       
-     dispmenu                                  C23A      64     100       1   .text       
-     checkflex                                 C29E      A4     164       2   .text       
-     array_maker                               C342      69     105       1   .text       
-     PrintCharacter                            C3AB      3A      58       1   .text       
+     initializations                           C061      B7     183       1   .text       
+     main                                      C118      56      86       1   .text       
+     RTI_ISR                                   C16E      57      87       1   .text       
+     TIM_ISR                                   C1C5      47      71       1   .text       
+     SCI_ISR                                   C20C       1       1       1   .text       
+     shiftout                                  C20D      14      20       1   .text       
+     lcdwait                                   C221       A      10       3   .text       
+     send_byte                                 C22B      11      17       2   .text       
+     send_i                                    C23C       7       7      12   .text       
+     print_c                                   C243       7       7      28   .text       
+     pmsglcd                                   C24A      24      36       1   .text       
+     outchar                                   C26E       9       9       1   .text       
+     pmsgterm                                  C277      24      36       1   .text       
+     dispmenu                                  C29B      64     100       1   .text       
+     checkflex                                 C2FF     277     631       6   .text       
+     array_maker                               C576      69     105       1   .text       
+     PrintCharacter                            C5DF      3A      58       1   .text       
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
      _Vector_15                                FFE0       2       2       0   .abs_section_ffe0
      _Vector_7                                 FFF0       2       2       0   .abs_section_fff0
@@ -1324,19 +1333,19 @@ main.c.o:
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC3E5 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC619 ---- SIZE       4 ---
 Filling bytes inserted
  000C0901
-------- ROM-ADDRESS: 0xC3E9 ---- RAM-ADDRESS: 0x901 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC61D ---- RAM-ADDRESS: 0x901 ---- SIZE       1 ---
 Name of initialized Object : THRESH:1
  B4
-------- ROM-ADDRESS: 0xC3EA ---- RAM-ADDRESS: 0x902 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xC61E ---- RAM-ADDRESS: 0x902 ---- SIZE       1 ---
 Name of initialized Object : ADD
  80
-------- ROM-ADDRESS: 0xC3EB ---- RAM-ADDRESS: 0x903 ---- SIZE      10 ---
+------- ROM-ADDRESS: 0xC61F ---- RAM-ADDRESS: 0x903 ---- SIZE      10 ---
 Name of initialized Object : menu
  C03BC041C0 47C04DC053
-------- ROM-ADDRESS: 0xC3F5 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC629 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1351,12 +1360,13 @@ initializations           USES _CLKSEL _PLLCTL _SYNR _REFDV _CRGFLG _COPCTL
                                 _SCIBD _SCICR1 _SCICR2 _DDRAB _PORTAB _DDRT _DDRAD 
                                 _ATDDIEN _ATDCTL23 _ATDCTL45 _PTM _DDRM _SPICR1 _SPICR2 
                                 _SPIBR _PTT send_i lcdwait array_maker _CRGINT 
-                                _RTICTL 
-main                      USES initializations dispmenu STRING.Team.15.6 
-                                PrintCharacter tenthsec checkflex leftpb runstp rghtpb 
+                                _RTICTL _TSCR1 _TIOS _TSCR2 _TC7 _TIE 
+main                      USES initializations _TIE STRING.Team.15.6 
+                                PrintCharacter tenthsec send_i checkflex checkCondition 
+                                dispmenu leftpb runstp rghtpb 
 RTI_ISR                   USES _CRGFLG rticnt tenthsec prevpbleft _PORTAD0 
                                 leftpb prevpbright rghtpb zerorticnt 
-TIM_ISR                   USES _TFLG1 
+TIM_ISR                   USES _TFLG1 timinterruptCounter flexChange 
 shiftout                  USES _SPISR _SPIDR 
 send_byte                 USES shiftout _PTT lcdwait 
 send_i                    USES _PTT send_byte 
@@ -1367,8 +1377,8 @@ pmsgterm                  USES outchar
 dispmenu                  USES send_i pmsglcd pmsgterm lcdwait checkflex flex 
                                 menuItemCounter menu 
 checkflex                 USES flex _ATDCTL45 _ATDSTAT0 _ATDDR0 atd0 _ATDDR1 
-                                atd1 _ATDDR2 atd2 _ATDDR3 atd3 _ATDDR4 atd4 THRESH 
-                                zerorticnt 
+                                checkflex atd1 _ATDDR2 atd2 _ATDDR3 atd3 _ATDDR4 atd4 
+                                THRESH zerorticnt prevFlex flexChange print_c 
 array_maker               USES ADD lcd_array 
 PrintCharacter            USES lcd_array pointer send_i print_c 
 _Vector_20                USES SCI_ISR 
@@ -1396,32 +1406,36 @@ DEPENDENCY TREE
  |  |  |  
  |  |  +- array_maker         
  |  |       
- |  +- dispmenu            
- |  |  | 
- |  |  +- send_i               (see above)
- |  |  |  
- |  |  +- pmsglcd             
- |  |  |  | 
- |  |  |  +- print_c             
- |  |  |     | 
- |  |  |     +- send_byte            (see above)
- |  |  |        
- |  |  +- pmsgterm            
- |  |  |  | 
- |  |  |  +- outchar             
- |  |  |       
- |  |  +- lcdwait              (see above)
- |  |  |  
- |  |  +- checkflex           
- |  |       
  |  +- PrintCharacter      
  |  |  | 
  |  |  +- send_i               (see above)
  |  |  |  
+ |  |  +- print_c             
+ |  |     | 
+ |  |     +- send_byte            (see above)
+ |  |        
+ |  +- send_i               (see above)
+ |  |  
+ |  +- checkflex           
+ |  |  | 
  |  |  +- print_c              (see above)
  |  |     
- |  +- checkflex            (see above)
- |     
+ |  +- dispmenu            
+ |     | 
+ |     +- send_i               (see above)
+ |     |  
+ |     +- pmsglcd             
+ |     |  | 
+ |     |  +- print_c              (see above)
+ |     |     
+ |     +- pmsgterm            
+ |     |  | 
+ |     |  +- outchar             
+ |     |       
+ |     +- lcdwait              (see above)
+ |     |  
+ |     +- checkflex            (see above)
+ |        
  +- _Startup            
     | 
     +- Init                
@@ -1447,5 +1461,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 8
-Total size of all blocks to be downloaded: 1023
+Total size of all blocks to be downloaded: 1587
 

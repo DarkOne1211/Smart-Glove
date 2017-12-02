@@ -77,7 +77,7 @@ void pmsglcd(char[]);
 void testLCD(char);
 void pmsgterm(char[]);
 void dispmenu(void);
-void checkflex(void);
+int checkflex(void);
 void array_maker(void);
 void PrintCharacter(char* print , int a , int b);
 /* Variable declarations */
@@ -100,6 +100,10 @@ int menuItemCounter = 0;
 unsigned char lcd_array[4][20];
 char ADD = 0x80;
 char pointer = 0;
+int prevFlex[5] = {0,0,0,0,0};
+int flexChange[5] = {0,0,0,0,0};
+int timinterruptCounter = 0;
+int checkCondition = 0;
 // LCD MENU
 char *menu[5] = {"test0","test1","test2","test3","test4"};
 /* Special ASCII characters */
@@ -196,6 +200,13 @@ Initialize SPI for baud rate of 6 Mbs, MSB first
      DDRT = 0xFF;
      PTT_PTT0 = 0;
      PTT_PTT1 = 0;
+
+// TIM interrupt
+   TSCR1 = 0x80; 
+  TIOS = 0x80; 
+  TSCR2 = 0x0C; 
+  TC7 = 15000;
+  TIE_C7I = 0;   
 	      	      
 }
 
@@ -211,14 +222,21 @@ void main(void) {
   DisableInterrupts
 	initializations(); 		  			 		  		
 	EnableInterrupts;
-  dispmenu();
+	TIE_C7I = 1; 
+  //dispmenu();
   PrintCharacter("Team 15",2,6);
  for(;;) {
   
 /* < start of your main loop > */ 
  if(tenthsec){
      tenthsec = 0;
-     checkflex();
+     send_i(LCDCLR);
+     checkCondition = checkflex();
+     if(checkCondition == 0){
+      continue;
+     } else {
+      dispmenu();
+     }
  }
       
 
@@ -276,8 +294,27 @@ interrupt 7 void RTI_ISR(void) {
 interrupt 15 void TIM_ISR(void)
 {
   	// clear TIM CH 7 interrupt flag 
- 	TFLG1 = TFLG1 | 0x80; 
- 
+ 	TFLG1 = TFLG1 | 0x80;
+ 	timinterruptCounter++;
+ 	if(timinterruptCounter == 650) {
+ 	  if(flexChange[0] != 0) {
+ 	  flexChange[0] = 0; 
+   	}
+   	if(flexChange[1] != 0) {
+   	  flexChange[1] = 0;  
+   	}
+   	if(flexChange[2] != 0) {
+   	  flexChange[2] = 0;  
+   	}
+   	if(flexChange[3] != 0) {
+   	  flexChange[3] = 0 ; 
+   	}
+   	if(flexChange[4] != 0) {
+   	  flexChange[4] = 0 ; 
+   	}
+   	
+   	timinterruptCounter = 0;
+ 	}
 
 }
 
@@ -508,7 +545,7 @@ void dispmenu(){
 ***********************************************************************
 */
 
-void checkflex() {
+int checkflex() {
       
       flex[0] = 0;
       flex[1] = 0;
@@ -543,7 +580,127 @@ void checkflex() {
         if(atd4 > THRESH){
           flex[4] = 1;
           zerorticnt = 0;
-        }  
+        }
+        
+        if(flex[0] == 1 && prevFlex[0] != flex[0]) {
+          flexChange[0] += 1;
+          if(flexChange[0] == 1) {
+           print_c('a'); 
+          }
+          if(flexChange[0] == 2) {
+           print_c('b'); 
+          }
+          if(flexChange[0] == 3) {
+           print_c('c'); 
+          }
+          if(flexChange[0] == 4) {
+           print_c('d'); 
+          }
+          if(flexChange[0] == 5) {
+           print_c('e'); 
+          }
+        }
+        if(flex[1] == 1 && prevFlex[1] != flex[1]) {
+          flexChange[1] += 1;
+         if(flexChange[1] == 1) {
+           print_c('f'); 
+          }
+          if(flexChange[1] == 2) {
+           print_c('g'); 
+          }
+          if(flexChange[1] == 3) {
+           print_c('h'); 
+          }
+          if(flexChange[1] == 4) {
+           print_c('i'); 
+          }
+          if(flexChange[1] == 5) {
+           print_c('j'); 
+          }
+          
+        }
+        if(flex[2] == 1 && prevFlex[2] != flex[2]) {
+          flexChange[2] += 1;
+         if(flexChange[2] == 1) {
+           print_c('k'); 
+          }
+          if(flexChange[2] == 2) {
+           print_c('l'); 
+          }
+          if(flexChange[2] == 3) {
+           print_c('m'); 
+          }
+          if(flexChange[2] == 4) {
+           print_c('n'); 
+          }
+          if(flexChange[2] == 5) {
+           print_c('o'); 
+          }
+          
+        }
+        if(flex[3] == 1 && prevFlex[3] != flex[3]) {
+          flexChange[3] += 1;
+          if(flexChange[3] == 1) {
+           print_c('p'); 
+          }
+          if(flexChange[3] == 2) {
+           print_c('q'); 
+          }
+          if(flexChange[3] == 3) {
+           print_c('r'); 
+          }
+          if(flexChange[3] == 4) {
+           print_c('s'); 
+          }
+          if(flexChange[3] == 5) {
+           print_c('t'); 
+          }
+        }
+        if(flex[4] == 1 && prevFlex[4] != flex[4]) {
+          flexChange[4] += 1;
+        if(flexChange[4] == 1) {
+           print_c('u'); 
+          }
+          if(flexChange[4] == 2) {
+           print_c('v'); 
+          }
+          if(flexChange[4] == 3) {
+           print_c('w'); 
+          }
+          if(flexChange[4] == 4) {
+           print_c('x'); 
+          }
+          if(flexChange[4] == 5) {
+           print_c('y'); 
+          }
+          if(flexChange[4] == 6) {
+           print_c('z'); 
+          }
+          
+        }
+        
+        /*if(flexChange[0] != 0 && flexChange[1] != 0){
+          print_c('\b');
+          print_c('');
+          print_c('\b');
+          print_c('\b');
+          print_c('');
+          print_c('\b');
+          print_c('\b');
+          print_c('\b');
+          print_c('');
+        }*/
+        
+        prevFlex[0] = flex[0];
+        prevFlex[1] = flex[1];
+        prevFlex[2] = flex[2];
+        prevFlex[3] = flex[3];
+        prevFlex[4] = flex[4];
+        if(flexChange[1] != 0 && flexChange[2] != 0) {
+          return 12;
+        }
+    return 0;
+        
 }
 /*****************************************************************************************
  * Function: Array maker
